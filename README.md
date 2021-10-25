@@ -1,7 +1,7 @@
 # Multitas
 
 # instruction to run the application file 
-Download the Multitas.exe file, open it up and start to use it to delete duplicate files from your windows os pc. 
+Download the Multitas.exe file, and start to use it to delete duplicate files from your windows os pc. 
 
 This is the earliest version of the python application, for the latest version you will need to install the application on your windows os, find out the method under # instruction to install the application file part
 
