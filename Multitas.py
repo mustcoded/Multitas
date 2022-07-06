@@ -4,23 +4,26 @@ from Remove import Remove
 import os
 from tkinter import messagebox
 import webbrowser
+from Copy import Copy
+import platform
+from tkinter import Menu
 
-win = Tk() # 1 Create instance
-win.title("Multitas") # 2 Add a title
-#win.iconbitmap(os.path.abspath('icon.ico'))
-win.resizable(0, 0) # 3 Disable resizing the GUI
-win.configure(background='white') # 4 change background color
-#win.iconbitmap(('icon.ico'))
+win = Tk() # Create instance
+win.title("Multitas") # Add a title
+win.resizable(0, 0) # Disable resizing the GUI
+win.configure(background='black') # change background color
+win.iconbitmap(('icon.ico'))
 
-# 5 Create a label
-aLabel = Label(win, text="Select a file to search for it's duplicate files then select another folder which you would like to search and remove those duplicate files from, sit back and enjoy!", anchor="center", padx=13, pady=10, relief=RAISED)
-aLabel.grid(column=0, row=1)
+
+#  Create a label
+aLabel = Label(win, text="Select tasks from buttons below, if you have any question then read the manual!", anchor="center", padx=13, pady=10, relief=RAISED,)
+aLabel.grid(column=0, row=0, sticky=W+E)
 aLabel.configure(foreground="white")
 aLabel.configure(background="black")
-aLabel.configure(wraplength = 240)
+aLabel.configure(wraplength=160)
 aLabel.message = ''
 
-# 6 Create a selectFile function to be used by action button
+# Create a selectFile function to remove the duplicate files
 def selectFile():
 
     fullfilenames = filedialog.askopenfilenames(initialdir="/", title="Select a file") # select multiple files from the hard drive
@@ -54,21 +57,84 @@ def selectFile():
         messagebox.showinfo("Select file", "You need to select a file!")
         return
 
+# Create a copyFile function to move a file from one folder to another
+def copyFile():
 
-def openLink(): # start a new link
+    fullfilenames = filedialog.askopenfilenames(initialdir="/", title="Select a file") # select multiple files from the hard drive
 
-    webbrowser.open_new("http://codingdirectional.info/2018/12/12/remove-duplicate-files-project-is-ready/")
+    if(fullfilenames != ''):
 
-# 9 Adding a Button
+        fullfilenamelist = win.tk.splitlist(fullfilenames)
+        directory_path = os.path.dirname(os.path.abspath(fullfilenamelist[0]))
 
-action = Button(text="Select File", command=selectFile)
-action.grid(column=0, row=2, sticky=W+E)
+        os.chdir(directory_path)  # change the directory to the selected file directory
+
+        folder = filedialog.askdirectory()  # open a folder then create and start a new Copy thread to move the file from one directory to another one
+        folder = folder.replace('/', '\\')  # This is for the windows separator only
+
+        if(folder != '' and folder != os.getcwd()):
+
+            for fullfilename in fullfilenamelist:
+
+                if(fullfilename != ''):
+                    filename = fullfilename.split('/')[-1]
+                    copy = Copy(folder, filename, fullfilename)
+                    copy.start()
+                    copy.join()
+                    messagebox.showinfo('Move the file ', 'File has been moved to new destination')
+
+        else:
+            messagebox.showinfo("Error", "Kindly select one folder and it must be a different one")
+            return
+
+    else:
+        messagebox.showinfo("Select file", "You need to select a file!")
+        return
+
+# Find out a computer system information
+def sysInfo():
+    sys_text = "OS :- " + platform.platform() + ' ' +  platform.version() + '\n'
+    sys_text += "Processor :- " + platform.processor() + '\n'
+    sys_text += "Chipset Brand :- " + platform.machine() + '\n'
+    sys_text += "Network :- " + platform.node() + '\n'
+    aLabel.configure(text=sys_text)
+
+def openLink(): # Start a new link
+
+    webbrowser.open_new("https://islandtropicaman.com/wp/2022/07/06/a-python-application-which-handles-variety-of-tasks/")
+
+# Adding a Button
+
+button_frame = Frame(win, bg='black')
+button_frame.grid(column=0, row=1, sticky=E+W)
+
+action = Button(button_frame, text="Remove", command=selectFile, padx=3)
+action.grid(column=0, row=0, sticky=E+W)
 action.configure(background='black')
 action.configure(foreground='white')
 
-action_link = Button(text="Website", command=openLink)
-action_link.grid(column=0, row=0, sticky=W+E)
-action_link.configure(background='black')
-action_link.configure(foreground='white')
+action_move = Button(button_frame, text="Move", command=copyFile, padx=3)
+action_move.grid(column=1, row=0, sticky=E+W)
+action_move.configure(background='black')
+action_move.configure(foreground='white')
 
-win.mainloop()  # 10 start GUI
+#action_pic = Button(button_frame, text="SysInfo", command=sysInfo, padx=2)
+#action_pic.grid(column=2, row=0, sticky=E+W)
+#action_pic.configure(background='black')
+#action_pic.configure(foreground='white')
+
+#action_link = Button(button_frame, text="Manual", command=openLink, padx=2)
+#action_link.grid(column=3, row=0, sticky=E+W)
+#action_link.configure(background='black')
+#action_link.configure(foreground='white')
+
+#set menu bar
+menuBar = Menu(win)
+win.configure(menu=menuBar)
+fileMenu = Menu(menuBar, tearoff=0)
+fileMenu.add_command(label="Manual", command=openLink)
+fileMenu.add_separator()
+fileMenu.add_command(label="Sys Info", command=sysInfo)
+menuBar.add_cascade(label="File", menu=fileMenu)
+
+win.mainloop()  # start GUI
