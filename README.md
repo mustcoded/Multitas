@@ -1,5 +1,7 @@
 # Multitas
 
+![alt text](https://github.com/mustcoded/Multitas/blob/master/multitask.png)
+
 # instruction to run the application file 
 Download the Multitas.exe file, and start to use it to delete duplicate files from your windows os pc. 
 
